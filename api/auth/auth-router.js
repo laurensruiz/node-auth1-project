@@ -59,7 +59,22 @@ router.post('/register', checkUsernameFree, checkPasswordLength, (req, res, next
   }
  */
 router.post('/login', checkUsernameExists, (req, res, next)=>{
-  res.json('login')
+  const {password} = req.body
+  //we need to compare the password with the hash to the database to see if it matches bycrypt we are comparing the password typed w/ database password (req.user)
+  if(bcrypt.compareSync(password, req.user.password)){
+    //make it so cookie is set on client and server stores a session with session id
+    req.session.user = req.user
+    next({
+      status: 200,
+      message: `Welcome ${req.user.username}`
+    })
+  } else{
+    //this invalid is refering to password, the middleware refers to username
+    next({
+      status: 401,
+      message: 'Invalid credentials'
+    })
+  }
 })
 
 /**

@@ -48,13 +48,15 @@ async function checkUsernameFree(req, res, next) {
 async function checkUsernameExists(req, res, next) {
   //next()
   try {
-    const user = await User.findBy({username: req.body.username}) //returns a promise
-    if(!user.length){
+    const users = await User.findBy({username: req.body.username}) //returns a promise and an array of that user
+    if(!users.length){
       next({
         status: 401,
         message: 'Invalid credentials'
       })
     } else {
+      //make a req.user to equal user that we find so we can use that data to matchup later. This is user in first position since there is only one and remember we get an array
+      req.user = users[0]
       next()
     }
   } catch (err){
