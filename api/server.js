@@ -1,12 +1,16 @@
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
-const usersRouter = require('./users/users-router')
 
+const usersRouter = require('./users/users-router')
 const authRouter = require('./auth/auth-router')
+const session =require('express-session')
+const Store = require('connect-session-knex')(session)
+const knex =require('../data/db-config')
 /**
  * 
  * //npm i express-session
+ * npm i connext-session-knex
   Do what needs to be done to support sessions with the `express-session` package!
   To respect users' privacy, do NOT send them a cookie unless they log in.
   This is achieved by setting 'saveUninitialized' to false, and by not
@@ -21,6 +25,26 @@ const authRouter = require('./auth/auth-router')
 
 const server = express();
 
+server.use(session({
+  name:'chocolatechip',
+  secret: 'shh',
+  saveUninitialized: false,
+  resave: false,
+  //where we store sessions, 1000 = second
+  store: new Store({
+    knex,
+    createTable: true,
+    clearInterval: 1000 * 60 * 10,
+    tablename:'sessions',
+    sidfieldname:'sid' //session id
+  }),
+  cookie: {
+    maxAge: 1000 * 60 * 10,
+    secure: false, //if true it will run on https (right now we are running on http), with will make sure it is running on encrypted
+    httpOnly: true, // makes sure javascript on page cannot read cookie
+    //sameSite: 'none' //this will only work with https since, meaning no third party cookies
+  }
+}))
 server.use(helmet());
 server.use(express.json());
 server.use(cors());
