@@ -24,7 +24,7 @@ async function checkUsernameFree(req, res, next) {
   //next()
   try {
     const user = await User.findBy({username: req.body.username}) //returns a promise
-    if(user){
+    if(user.length){
       next({
         status: 422,
         message: 'Username taken'
@@ -87,20 +87,16 @@ async function checkUsernameExists(req, res, next) {
   }
 */
 function checkPasswordLength(req, res, next) {
-  next()
-  // try {
-  //   const password = req.body.password
-  //   if(password.length <= 3) {
-  //     next({
-  //       status: 422,
-  //       message: "Password must be longer than 3 chars",
-  //     })
-  //   } else {
-  //     next()
-  //   }
-  // } catch (err){
-  //   next(err)
-  // }
+  //next()
+  const password = req.body.password
+  if(!password || password.length <=3) {
+    next({
+        status: 422,
+        message: "Password must be longer than 3 chars",
+      })
+  } else {
+    next()
+  }
 }
 
 // Don't forget to add these to the `exports` object so they can be required in other modules
