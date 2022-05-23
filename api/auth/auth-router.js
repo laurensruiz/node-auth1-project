@@ -96,11 +96,16 @@ router.post('/login', checkUsernameExists, (req, res, next)=>{
 router.get('/logout', (req, res, next)=>{
   //res.json('logout')
   if(req.session.user){
-    req.session.destroy()
-    next({
-      status: 200, 
-      message: "logged out"
-    })
+    req.session.destroy(err => {
+      if(err){
+        next(err)
+      } else {
+        next({
+          status: 200, 
+          message: "logged out"
+        })
+      }
+    }) 
   } else {
     next({
       status: 200,
