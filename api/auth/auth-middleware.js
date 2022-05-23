@@ -8,8 +8,17 @@ const User = require('../users/users-model')
   }
 */
 function restricted(req, res, next) {
-  console.log('restricted')
-  next()
+  // console.log('restricted')
+  // next()
+  //if there is a user that successfully logged in in a session or the client sends the proper cookie back
+  if(req.session.user){
+    next()
+  } else {
+    next({
+      status: 401,
+      message: "You shall not pass!",
+    })
+  }
 }
 
 /*
